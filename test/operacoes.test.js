@@ -74,3 +74,146 @@ describe('Suíte de Testes Fraca para 50 Operações Aritméticas', () => {
   test('49. deve calcular o triplo de um número', () => { expect(triplo(10)).toBe(30); });
   test('50. deve calcular a metade de um número', () => { expect(metade(20)).toBe(10); });
 });
+
+// Testes adicionados para matar os mutantes sobreviventes do primeiro relatório do Stryker.
+// Cada teste indica, entre colchetes, a linha de src/operacoes.js que ele protege.
+describe('Suíte Reforçada: testes para matar mutantes sobreviventes', () => {
+  describe('Mensagens e condições de erro', () => {
+    test('[L8] divisão por zero lança erro com a mensagem correta', () => {
+      expect(() => divisao(5, 0)).toThrow('Divisão por zero não é permitida.');
+    });
+
+    test('[L13] raiz quadrada de negativo lança erro com a mensagem correta', () => {
+      expect(() => raizQuadrada(-4)).toThrow('Não é possível calcular a raiz quadrada de um número negativo.');
+    });
+
+    test('[L13] raiz quadrada de zero é zero (fronteira de n < 0)', () => {
+      expect(raizQuadrada(0)).toBe(0);
+    });
+
+    test('[L18] fatorial de negativo lança erro com a mensagem correta', () => {
+      expect(() => fatorial(-1)).toThrow('Fatorial não é definido para números negativos.');
+    });
+
+    test('[L18-19] fatorial de 0 e de 1 é 1 (fronteira de n < 0)', () => {
+      expect(fatorial(0)).toBe(1);
+      expect(fatorial(1)).toBe(1);
+    });
+
+    test('[L34] máximo de array vazio lança erro com a mensagem correta', () => {
+      expect(() => maximoArray([])).toThrow('possui valor máximo.');
+    });
+
+    test('[L38] mínimo de array vazio lança erro com a mensagem correta', () => {
+      expect(() => minimoArray([])).toThrow('possui valor mínimo.');
+    });
+
+    test('[L96] inverso de zero lança erro com a mensagem correta', () => {
+      expect(() => inverso(0)).toThrow('Não é possível inverter o número zero.');
+    });
+
+    test('[L108] mediana de array vazio lança erro com a mensagem correta', () => {
+      expect(() => medianaArray([])).toThrow('possui mediana.');
+    });
+  });
+
+  describe('Casos de array vazio', () => {
+    test('[L25] média de array vazio é 0 (e não NaN)', () => {
+      expect(mediaArray([])).toBe(0);
+    });
+
+    test('[L84] produto de array vazio é 1 (elemento neutro)', () => {
+      expect(produtoArray([])).toBe(1);
+    });
+  });
+
+  describe('Funções booleanas: o caso que deve retornar false', () => {
+    test('[L43] isPar retorna false para número ímpar', () => {
+      expect(isPar(7)).toBe(false);
+    });
+
+    test('[L44] isImpar retorna false para número par', () => {
+      expect(isImpar(4)).toBe(false);
+    });
+
+    test('[L92] isDivisivel retorna false quando há resto', () => {
+      expect(isDivisivel(10, 3)).toBe(false);
+    });
+
+    test('[L104] isMaiorQue retorna false quando a < b e quando a === b', () => {
+      expect(isMaiorQue(5, 10)).toBe(false);
+      expect(isMaiorQue(5, 5)).toBe(false);
+    });
+
+    test('[L105] isMenorQue retorna false quando a > b e quando a === b', () => {
+      expect(isMenorQue(10, 5)).toBe(false);
+      expect(isMenorQue(5, 5)).toBe(false);
+    });
+
+    test('[L106] isEqual retorna false para números diferentes', () => {
+      expect(isEqual(7, 8)).toBe(false);
+    });
+  });
+
+  describe('isPrimo', () => {
+    test('[L73] 0, 1 e negativos não são primos', () => {
+      expect(isPrimo(1)).toBe(false);
+      expect(isPrimo(0)).toBe(false);
+      expect(isPrimo(-7)).toBe(false);
+    });
+
+    test('[L74-75] números compostos não são primos', () => {
+      expect(isPrimo(9)).toBe(false);
+      expect(isPrimo(15)).toBe(false);
+    });
+
+    test('2 é o menor primo', () => {
+      expect(isPrimo(2)).toBe(true);
+    });
+  });
+
+  describe('clamp', () => {
+    test('[L88] valor abaixo do mínimo retorna o mínimo', () => {
+      expect(clamp(-5, 0, 10)).toBe(0);
+    });
+
+    test('[L89] valor acima do máximo retorna o máximo', () => {
+      expect(clamp(15, 0, 10)).toBe(10);
+    });
+
+    test('valores nos limites são mantidos', () => {
+      expect(clamp(0, 0, 10)).toBe(0);
+      expect(clamp(10, 0, 10)).toBe(10);
+    });
+  });
+
+  describe('Conversão de temperatura com entradas que não anulam a fórmula', () => {
+    test('[L93] 100 °C equivalem a 212 °F', () => {
+      expect(celsiusParaFahrenheit(100)).toBe(212);
+      expect(celsiusParaFahrenheit(-40)).toBe(-40);
+    });
+
+    test('[L94] 212 °F equivalem a 100 °C', () => {
+      expect(fahrenheitParaCelsius(212)).toBe(100);
+      expect(fahrenheitParaCelsius(-40)).toBe(-40);
+    });
+  });
+
+  describe('medianaArray', () => {
+    test('[L109] ordena a entrada antes de calcular a mediana de array ímpar', () => {
+      expect(medianaArray([5, 1, 3])).toBe(3);
+      expect(medianaArray([9, 7, 1, 8, 2])).toBe(7);
+    });
+
+    test('[L111-112] calcula a mediana de array par como média dos dois centrais', () => {
+      expect(medianaArray([4, 1, 3, 2])).toBe(2.5);
+      expect(medianaArray([10, 20])).toBe(15);
+    });
+
+    test('não altera o array recebido', () => {
+      const entrada = [3, 1, 2];
+      medianaArray(entrada);
+      expect(entrada).toEqual([3, 1, 2]);
+    });
+  });
+});
